@@ -1,11 +1,9 @@
 package com.allstate.quickclaimsserver.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity //to store class in database. You can also specify what it should be called
@@ -14,7 +12,6 @@ public class Claim {
     @Id //tells spring this is the unique field / primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY) //tells spring it is responsible for coming up with ids
     private Integer id;
-
     private String claimStatus;
     private String claimNumber;
     private String policyNumber;
@@ -33,9 +30,33 @@ public class Claim {
     private String incidentDescription;
     private LocalDate incidentDate;
     private String furtherDetails;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Task> tasks;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Note> notes;
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getClaimStatus() {
@@ -182,31 +203,8 @@ public class Claim {
         this.furtherDetails = furtherDetails;
     }
 
-    @Override
-    public String toString() {
-        return "Claim{" +
-                "claimStatus='" + claimStatus + '\'' +
-                ", claimNumber='" + claimNumber + '\'' +
-                ", policyNumber='" + policyNumber + '\'' +
-                ", policyType='" + policyType + '\'' +
-                ", propertyAddress='" + propertyAddress + '\'' +
-                ", vehicleMake='" + vehicleMake + '\'' +
-                ", vehicleModel='" + vehicleModel + '\'' +
-                ", manufactureYear='" + manufactureYear + '\'' +
-                ", typeOfAnimal='" + typeOfAnimal + '\'' +
-                ", breedOfAnimal='" + breedOfAnimal + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", claimStartDate='" + claimStartDate + '\'' +
-                ", estimatedAmount='" + estimatedAmount + '\'' +
-                ", claimReason='" + claimReason + '\'' +
-                ", incidentDescription='" + incidentDescription + '\'' +
-                ", incidentDate='" + incidentDate + '\'' +
-                ", furtherDetails='" + furtherDetails + '\'' +
-                '}';
-    }
-
-    public Claim(String claimStatus, String claimNumber, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, LocalDate incidentDate, String furtherDetails) {
+    public Claim(Integer id, String claimStatus, String claimNumber, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, LocalDate incidentDate, String furtherDetails, List<Task> tasks, List<Note> notes) {
+        this.id = id;
         this.claimStatus = claimStatus;
         this.claimNumber = claimNumber;
         this.policyNumber = policyNumber;
@@ -225,9 +223,50 @@ public class Claim {
         this.incidentDescription = incidentDescription;
         this.incidentDate = incidentDate;
         this.furtherDetails = furtherDetails;
+        this.tasks = tasks;
+        this.notes = notes;
     }
 
     public Claim() {
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Claim claim = (Claim) o;
+        return Objects.equals(id, claim.id) && Objects.equals(claimStatus, claim.claimStatus) && Objects.equals(claimNumber, claim.claimNumber) && Objects.equals(policyNumber, claim.policyNumber) && Objects.equals(policyType, claim.policyType) && Objects.equals(propertyAddress, claim.propertyAddress) && Objects.equals(vehicleMake, claim.vehicleMake) && Objects.equals(vehicleModel, claim.vehicleModel) && Objects.equals(manufactureYear, claim.manufactureYear) && Objects.equals(typeOfAnimal, claim.typeOfAnimal) && Objects.equals(breedOfAnimal, claim.breedOfAnimal) && Objects.equals(firstName, claim.firstName) && Objects.equals(lastName, claim.lastName) && Objects.equals(claimStartDate, claim.claimStartDate) && Objects.equals(estimatedAmount, claim.estimatedAmount) && Objects.equals(claimReason, claim.claimReason) && Objects.equals(incidentDescription, claim.incidentDescription) && Objects.equals(incidentDate, claim.incidentDate) && Objects.equals(furtherDetails, claim.furtherDetails) && Objects.equals(tasks, claim.tasks) && Objects.equals(notes, claim.notes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, claimStatus, claimNumber, policyNumber, policyType, propertyAddress, vehicleMake, vehicleModel, manufactureYear, typeOfAnimal, breedOfAnimal, firstName, lastName, claimStartDate, estimatedAmount, claimReason, incidentDescription, incidentDate, furtherDetails, tasks, notes);
+    }
+
+    @Override
+    public String toString() {
+        return "Claim{" +
+                "id=" + id +
+                ", claimStatus='" + claimStatus + '\'' +
+                ", claimNumber='" + claimNumber + '\'' +
+                ", policyNumber='" + policyNumber + '\'' +
+                ", policyType='" + policyType + '\'' +
+                ", propertyAddress='" + propertyAddress + '\'' +
+                ", vehicleMake='" + vehicleMake + '\'' +
+                ", vehicleModel='" + vehicleModel + '\'' +
+                ", manufactureYear='" + manufactureYear + '\'' +
+                ", typeOfAnimal='" + typeOfAnimal + '\'' +
+                ", breedOfAnimal='" + breedOfAnimal + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", claimStartDate=" + claimStartDate +
+                ", estimatedAmount=" + estimatedAmount +
+                ", claimReason='" + claimReason + '\'' +
+                ", incidentDescription='" + incidentDescription + '\'' +
+                ", incidentDate=" + incidentDate +
+                ", furtherDetails='" + furtherDetails + '\'' +
+                ", tasks=" + tasks +
+                ", notes=" + notes +
+                '}';
+    }
 }
