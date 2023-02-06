@@ -1,8 +1,10 @@
 package com.allstate.quickclaimsserver.service;
 
 import com.allstate.quickclaimsserver.data.ClaimRepository;
+import com.allstate.quickclaimsserver.data.NoteRepository;
 import com.allstate.quickclaimsserver.data.TaskRepository;
 import com.allstate.quickclaimsserver.domain.Claim;
+import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
 import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
@@ -21,7 +23,7 @@ public class ClaimServiceImpl implements ClaimService {
     @Autowired
     private TaskRepository taskRepository;
     @Autowired
-    private UniqueNumberGenerator uniqueNumberGenerator;
+    private NoteRepository noteRepository;
 
     @Override
     public Claim saveClaim(Claim claim) throws MissingFieldException {
@@ -40,7 +42,6 @@ public class ClaimServiceImpl implements ClaimService {
                 throw new MissingFieldException("Property Address cannot be empty");
             }
         }
-        System.out.println(claim.getPolicyType());
         if ("Motor".equals(claim.getPolicyType())) {
             claim.setPropertyAddress("");
             claim.setTypeOfAnimal("");
@@ -82,9 +83,6 @@ public class ClaimServiceImpl implements ClaimService {
         if (claim.getIncidentDescription() == null || claim.getIncidentDescription().isEmpty()) {
             throw new MissingFieldException("Incident Description cannot be empty");
         }
-        if (claim.getClaimNumber() == null || claim.getClaimNumber().isEmpty()) {
-            claim.setClaimNumber(uniqueNumberGenerator.generateUniqueNumber());
-        }
 
         return claimRepository.save(claim);
     }
@@ -92,6 +90,11 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public Task saveTask(Task task) throws ClaimNotFoundException {
         return taskRepository.save(task);
+    }
+
+    @Override
+    public Note saveNote(Note note) throws ClaimNotFoundException {
+        return noteRepository.save(note);
     }
 
     @Override
@@ -106,6 +109,7 @@ public class ClaimServiceImpl implements ClaimService {
             claim.setClaimReason(fields.get("claimReason").toString());
             System.out.println("claimReason updated");
         }
+        claim.setPaymentAmount(Double.parseDouble(fields.get("paymentAmount").toString()));
         claim.setClaimStatus(fields.get("claimStatus").toString());
         claim.setEstimatedAmount(Double.parseDouble(fields.get("estimatedAmount").toString()));
         claim.setFirstName(fields.get("firstName").toString());
@@ -145,13 +149,6 @@ public class ClaimServiceImpl implements ClaimService {
     public List<Claim> getByPolicyType(String policyType) {
         List<Claim> claims = claimRepository.findAllByPolicyType(policyType);
         System.out.println("Total " + policyType + " claims found = " + claims.size());
-        return claims;
-    }
-
-    @Override
-    public List<Claim> getByClaimNumber(String claimNumber) {
-        List<Claim> claims = claimRepository.findAllByClaimNumber(claimNumber);
-        System.out.println("Total " + claimNumber + " claims found = " + claims.size());
         return claims;
     }
 

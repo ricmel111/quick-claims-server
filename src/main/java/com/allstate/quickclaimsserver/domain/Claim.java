@@ -13,7 +13,6 @@ public class Claim {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //tells spring it is responsible for coming up with ids
     private Integer id;
     private String claimStatus;
-    private String claimNumber;
     private String policyNumber;
     private String policyType;
     private String propertyAddress;
@@ -30,6 +29,17 @@ public class Claim {
     private String incidentDescription;
     private LocalDate incidentDate;
     private String furtherDetails;
+
+    private Double paymentAmount;
+
+    public Double getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(Double paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Task> tasks;
     @OneToMany(cascade = CascadeType.ALL)
@@ -65,14 +75,6 @@ public class Claim {
 
     public void setClaimStatus(String claimStatus) {
         this.claimStatus = claimStatus;
-    }
-
-    public String getClaimNumber() {
-        return claimNumber;
-    }
-
-    public void setClaimNumber(String claimNumber) {
-        this.claimNumber = claimNumber;
     }
 
     public String getPolicyNumber() {
@@ -203,10 +205,9 @@ public class Claim {
         this.furtherDetails = furtherDetails;
     }
 
-    public Claim(Integer id, String claimStatus, String claimNumber, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, LocalDate incidentDate, String furtherDetails, List<Task> tasks, List<Note> notes) {
+    public Claim(Integer id, String claimStatus, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, LocalDate incidentDate, String furtherDetails, Double paymentAmount, List<Task> tasks, List<Note> notes) {
         this.id = id;
         this.claimStatus = claimStatus;
-        this.claimNumber = claimNumber;
         this.policyNumber = policyNumber;
         this.policyType = policyType;
         this.propertyAddress = propertyAddress;
@@ -223,6 +224,7 @@ public class Claim {
         this.incidentDescription = incidentDescription;
         this.incidentDate = incidentDate;
         this.furtherDetails = furtherDetails;
+        this.paymentAmount = paymentAmount;
         this.tasks = tasks;
         this.notes = notes;
     }
@@ -235,12 +237,12 @@ public class Claim {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Claim claim = (Claim) o;
-        return Objects.equals(id, claim.id) && Objects.equals(claimStatus, claim.claimStatus) && Objects.equals(claimNumber, claim.claimNumber) && Objects.equals(policyNumber, claim.policyNumber) && Objects.equals(policyType, claim.policyType) && Objects.equals(propertyAddress, claim.propertyAddress) && Objects.equals(vehicleMake, claim.vehicleMake) && Objects.equals(vehicleModel, claim.vehicleModel) && Objects.equals(manufactureYear, claim.manufactureYear) && Objects.equals(typeOfAnimal, claim.typeOfAnimal) && Objects.equals(breedOfAnimal, claim.breedOfAnimal) && Objects.equals(firstName, claim.firstName) && Objects.equals(lastName, claim.lastName) && Objects.equals(claimStartDate, claim.claimStartDate) && Objects.equals(estimatedAmount, claim.estimatedAmount) && Objects.equals(claimReason, claim.claimReason) && Objects.equals(incidentDescription, claim.incidentDescription) && Objects.equals(incidentDate, claim.incidentDate) && Objects.equals(furtherDetails, claim.furtherDetails) && Objects.equals(tasks, claim.tasks) && Objects.equals(notes, claim.notes);
+        return Objects.equals(id, claim.id) && Objects.equals(claimStatus, claim.claimStatus) && Objects.equals(policyNumber, claim.policyNumber) && Objects.equals(policyType, claim.policyType) && Objects.equals(propertyAddress, claim.propertyAddress) && Objects.equals(vehicleMake, claim.vehicleMake) && Objects.equals(vehicleModel, claim.vehicleModel) && Objects.equals(manufactureYear, claim.manufactureYear) && Objects.equals(typeOfAnimal, claim.typeOfAnimal) && Objects.equals(breedOfAnimal, claim.breedOfAnimal) && Objects.equals(firstName, claim.firstName) && Objects.equals(lastName, claim.lastName) && Objects.equals(claimStartDate, claim.claimStartDate) && Objects.equals(estimatedAmount, claim.estimatedAmount) && Objects.equals(claimReason, claim.claimReason) && Objects.equals(incidentDescription, claim.incidentDescription) && Objects.equals(incidentDate, claim.incidentDate) && Objects.equals(furtherDetails, claim.furtherDetails) && Objects.equals(paymentAmount, claim.paymentAmount) && Objects.equals(tasks, claim.tasks) && Objects.equals(notes, claim.notes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, claimStatus, claimNumber, policyNumber, policyType, propertyAddress, vehicleMake, vehicleModel, manufactureYear, typeOfAnimal, breedOfAnimal, firstName, lastName, claimStartDate, estimatedAmount, claimReason, incidentDescription, incidentDate, furtherDetails, tasks, notes);
+        return Objects.hash(id, claimStatus, policyNumber, policyType, propertyAddress, vehicleMake, vehicleModel, manufactureYear, typeOfAnimal, breedOfAnimal, firstName, lastName, claimStartDate, estimatedAmount, claimReason, incidentDescription, incidentDate, furtherDetails, paymentAmount, tasks, notes);
     }
 
     @Override
@@ -248,7 +250,6 @@ public class Claim {
         return "Claim{" +
                 "id=" + id +
                 ", claimStatus='" + claimStatus + '\'' +
-                ", claimNumber='" + claimNumber + '\'' +
                 ", policyNumber='" + policyNumber + '\'' +
                 ", policyType='" + policyType + '\'' +
                 ", propertyAddress='" + propertyAddress + '\'' +
@@ -265,8 +266,10 @@ public class Claim {
                 ", incidentDescription='" + incidentDescription + '\'' +
                 ", incidentDate=" + incidentDate +
                 ", furtherDetails='" + furtherDetails + '\'' +
+                ", paymentAmount=" + paymentAmount +
                 ", tasks=" + tasks +
                 ", notes=" + notes +
                 '}';
     }
+
 }

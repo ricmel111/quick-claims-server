@@ -1,6 +1,7 @@
 package com.allstate.quickclaimsserver.service;
 
 import com.allstate.quickclaimsserver.domain.Claim;
+import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
 import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
@@ -16,8 +17,6 @@ public interface ClaimService {
 
     public List<Claim> getByPolicyType(String policyType);
 
-    public List<Claim> getByClaimNumber(String claimNumber);
-
     public List<Claim> getByPolicyNumber(String policyNumber);
 
     public List<Claim> getByLastName(String lastName);
@@ -28,7 +27,8 @@ public interface ClaimService {
 
     public Task saveTask(Task task) throws ClaimNotFoundException;
 
+    public Note saveNote(Note note) throws ClaimNotFoundException;
+
     public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException;
 
-    //public Claim getByClaimNumber(String claimNumber) throws ClaimNotFoundException;
 }

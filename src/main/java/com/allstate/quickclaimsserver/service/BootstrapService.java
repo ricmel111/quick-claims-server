@@ -26,12 +26,6 @@ public class BootstrapService {
 
     @PostConstruct //run this method on start up
     public void setUpInitialData() {
-//        int numberOfClaims = claimRepository.findAll().size();
-//        if (numberOfClaims == 0) {
-//            Claim newClaim = new Claim("O","1111111111", "222222222", "Property", "123 Main Street, Chicago, IL, 28698", "", "", "", "", "", "John", "Doe", Date.valueOf("2023-01-01"), 123.45, "a long reason", "a long description", LocalDate.now(), "further details here");
-//            Claim savedClaim = claimRepository.save(newClaim);
-//            System.out.println("Claim saved with an id of " + savedClaim.getId());
-//        }
 
         int numberOfTasks = taskRepository.findAll().size();
         if(numberOfTasks == 0) {
@@ -56,7 +50,7 @@ public class BootstrapService {
             tasks.add(newTask2);
             notes.add(newNote1);
             notes.add(newNote2);
-            Claim claim1 = new Claim(null, "O","0111211234", "123445646", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", LocalDate.now(),"further details here", tasks, notes);
+            Claim claim1 = new Claim(null, "O","0111211234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", LocalDate.now(),"further details here", null, tasks, notes);
             newTask1.setClaim(claim1);
             newTask2.setClaim(claim1);
             newNote1.setClaim(claim1);
