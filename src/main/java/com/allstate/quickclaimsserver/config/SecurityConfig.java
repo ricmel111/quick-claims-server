@@ -1,7 +1,6 @@
 package com.allstate.quickclaimsserver.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -31,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception{
 
-        http.cors().and().authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll(); //allow browser to check everything first. ANy htttp request using OPTION will be allowed through
+        http.cors().and().authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll(); //allow browser to check everything first. Any http request using OPTION will be allowed through
 
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/claim/**")

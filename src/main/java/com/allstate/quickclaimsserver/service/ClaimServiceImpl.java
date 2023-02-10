@@ -6,11 +6,18 @@ import com.allstate.quickclaimsserver.data.TaskRepository;
 import com.allstate.quickclaimsserver.domain.Claim;
 import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
+import com.allstate.quickclaimsserver.exceptions.ArchivedException;
 import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
+import com.allstate.quickclaimsserver.exceptions.InvalidFieldException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,35 +101,123 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public Note saveNote(Note note) throws ClaimNotFoundException {
+        note.setNoteDate(LocalDateTime.now());
         return noteRepository.save(note);
     }
 
     @Override
-    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException {
-        //load existing payment
-        Claim claim = claimRepository.findById(id).get(); //should check it is there + throw exception
-        if (fields.containsKey("breedOfAnimal") && !fields.get("breedOfAnimal").toString().equals(claim.getBreedOfAnimal())) {
-            claim.setBreedOfAnimal(fields.get("breedOfAnimal").toString());
-            System.out.println("Breed updated");
+    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException {
+//        load existing payment
+        Optional<Claim> optionalClaim = claimRepository.findById(id);
+        if (!optionalClaim.isPresent()) {
+            throw new ClaimNotFoundException("There is no claim with id " + id);
         }
-        if (fields.containsKey("claimReason") && !fields.get("claimReason").toString().equals(claim.getClaimReason())) {
+        Claim claim = optionalClaim.get();
+
+        if (claim.getClaimStatus().equals("R") || claim.getClaimStatus().equals("C")) {
+            throw new ArchivedException("The claim cannot be updated because it is archived.");
+        }
+        if (!Arrays.asList("O", "H", "A", "R", "C", "P").contains(fields.get("claimStatus").toString())) {
+            throw new InvalidFieldException("Invalid claim status, allowed values are O, H, A, R, C, and P");
+        } else if (!fields.get("claimStatus").toString().equals(claim.getClaimStatus())) {
+            claim.setClaimStatus(fields.get("claimStatus").toString());
+            System.out.println("claimStatus updated");
+        }
+
+        String policyNumber = fields.get("policyNumber").toString();
+        if (policyNumber.length() != 9) {
+            throw new InvalidFieldException("Invalid policy number, must be 9 characters long");
+        } else if (!policyNumber.equals(claim.getPolicyNumber())) {
+            claim.setPolicyNumber(policyNumber);
+            System.out.println("policyNumber updated");
+        }
+
+        if (!fields.get("policyType").toString().equals(claim.getPolicyType())) {
+            claim.setPolicyType(fields.get("policyType").toString());
+            System.out.println("policyType updated");
+        }
+        if (!fields.get("propertyAddress").toString().equals(claim.getPropertyAddress())) {
+            claim.setPropertyAddress(fields.get("propertyAddress").toString());
+            System.out.println("propertyAddress updated");
+        }
+        if (!fields.get("vehicleMake").toString().equals(claim.getVehicleMake())) {
+            claim.setVehicleMake(fields.get("vehicleMake").toString());
+            System.out.println("vehicleMake updated");
+        }
+        if (!fields.get("vehicleModel").toString().equals(claim.getVehicleModel())) {
+            claim.setVehicleModel(fields.get("vehicleModel").toString());
+            System.out.println("vehicleModel updated");
+        }
+        if (!fields.get("manufactureYear").toString().equals(claim.getManufactureYear())) {
+            claim.setManufactureYear(fields.get("manufactureYear").toString());
+            System.out.println("manufactureYear updated");
+        }
+        if (!fields.get("typeOfAnimal").toString().equals(claim.getTypeOfAnimal())) {
+            claim.setTypeOfAnimal(fields.get("typeOfAnimal").toString());
+            System.out.println("typeOfAnimal updated");
+        }
+        if (!fields.get("breedOfAnimal").toString().equals(claim.getBreedOfAnimal())) {
+            claim.setBreedOfAnimal(fields.get("breedOfAnimal").toString());
+            System.out.println("breedOfAnimal updated");
+        }
+        if (!fields.get("firstName").toString().equals(claim.getFirstName())) {
+            claim.setFirstName(fields.get("firstName").toString());
+            System.out.println("firstName updated");
+        }
+        if (!fields.get("lastName").toString().equals(claim.getLastName())) {
+            claim.setLastName(fields.get("lastName").toString());
+            System.out.println("lastName updated");
+        }
+        if (!fields.get("lastName").toString().equals(claim.getLastName())) {
+            claim.setLastName(fields.get("lastName").toString());
+            System.out.println("lastName updated");
+        }
+        if (fields.get("claimStartDate") != null && !fields.get("claimStartDate").toString().equals(claim.getClaimStartDate().toString())) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date newUtilDate = dateFormat.parse(fields.get("claimStartDate").toString());
+                java.sql.Date newSqlDate = new java.sql.Date(newUtilDate.getTime());
+                claim.setClaimStartDate(newSqlDate);
+                System.out.println("claimStartDate updated");
+            } catch (ParseException e) {
+                System.out.println("Unable to parse date: " + fields.get("claimStartDate").toString());
+            }
+        }
+        if (fields.get("estimatedAmount") != null && Double.parseDouble(fields.get("estimatedAmount").toString()) != claim.getEstimatedAmount()) {
+            claim.setEstimatedAmount(Double.parseDouble(fields.get("estimatedAmount").toString()));
+            System.out.println("estimatedAmount updated");
+        }
+        if (fields.get("paymentAmount") != null) {
+            String paymentAmountString = fields.get("paymentAmount").toString();
+            if (!paymentAmountString.isEmpty()) {
+                claim.setPaymentAmount(Double.parseDouble(paymentAmountString));
+                System.out.println("paymentAmount updated");
+            }
+        }
+        if (!fields.get("claimReason").toString().equals(claim.getClaimReason())) {
             claim.setClaimReason(fields.get("claimReason").toString());
             System.out.println("claimReason updated");
         }
-        claim.setPaymentAmount(Double.parseDouble(fields.get("paymentAmount").toString()));
-        claim.setClaimStatus(fields.get("claimStatus").toString());
-        claim.setEstimatedAmount(Double.parseDouble(fields.get("estimatedAmount").toString()));
-        claim.setFirstName(fields.get("firstName").toString());
-        claim.setFurtherDetails(fields.get("furtherDetails").toString());
-        claim.setIncidentDescription(fields.get("incidentDescription").toString());
-        claim.setLastName(fields.get("lastName").toString());
-        claim.setPolicyNumber(fields.get("policyNumber").toString());
-        claim.setPolicyType(fields.get("policyType").toString());
-        claim.setPropertyAddress(fields.get("propertyAddress").toString());
-        claim.setTypeOfAnimal(fields.get("typeOfAnimal").toString());
-        claim.setVehicleMake(fields.get("vehicleMake").toString());
-        claim.setManufactureYear(fields.get("manufactureYear").toString());
-        claim.setVehicleModel(fields.get("vehicleModel").toString());
+        if (fields.get("incidentDate") != null && !fields.get("incidentDate").toString().equals(claim.getIncidentDate().toString())) {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date newUtilDate = dateFormat.parse(fields.get("incidentDate").toString());
+                java.sql.Date newSqlDate = new java.sql.Date(newUtilDate.getTime());
+                claim.setIncidentDate(newSqlDate);
+                System.out.println("incidentDate updated");
+            } catch (ParseException e) {
+                System.out.println("Unable to parse date: " + fields.get("incidentDate").toString());
+            }
+        }
+        if (!fields.get("incidentDescription").toString().equals(claim.getIncidentDescription())) {
+            claim.setIncidentDescription(fields.get("incidentDescription").toString());
+            System.out.println("incidentDescription updated");
+        }
+        if (!fields.get("furtherDetails").toString().equals(claim.getFurtherDetails())) {
+            claim.setFurtherDetails(fields.get("furtherDetails").toString());
+            System.out.println("furtherDetails updated");
+        }
+
         //save and return the payment
         return claimRepository.save(claim);
     }

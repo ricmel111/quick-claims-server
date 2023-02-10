@@ -5,7 +5,9 @@ import com.allstate.quickclaimsserver.data.TaskRepository;
 import com.allstate.quickclaimsserver.domain.Claim;
 import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
+import com.allstate.quickclaimsserver.exceptions.ArchivedException;
 import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
+import com.allstate.quickclaimsserver.exceptions.InvalidFieldException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
 import com.allstate.quickclaimsserver.service.ClaimService;
 import com.allstate.quickclaimsserver.service.NoteService;
@@ -14,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class ClaimController {
     }
 
     @PutMapping("/{id}")
-    public Claim updateClaim(@PathVariable Integer id, @RequestBody HashMap<String, Object> fields) throws ClaimNotFoundException {
+    public Claim updateClaim(@PathVariable Integer id, @RequestBody HashMap<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException {
         return claimService.updateClaim(id, fields);
     }
 
@@ -94,22 +95,22 @@ public class ClaimController {
     public String setUpData() throws MissingFieldException {
         Task newTask1 = new Task("O", "this is task 1", Date.valueOf("2023-01-01"));
         Task newTask2 = new Task("O", "this is task 2", Date.valueOf("2023-01-01"));
-        Note newNote1 = new Note("this is note 1", Date.valueOf("2023-01-01"));
-        Note newNote2 = new Note("this is note 2", Date.valueOf("2023-01-01"));
+        Note newNote1 = new Note("this is note 1", LocalDateTime.of(2023, 1, 1, 0, 0));
+        Note newNote2 = new Note("this is note 2", LocalDateTime.of(2023, 1, 1, 0, 0));
         List<Task> tasks = new ArrayList<>();
         List<Note> notes = new ArrayList<>();
         tasks.add(newTask1);
         tasks.add(newTask2);
         notes.add(newNote1);
         notes.add(newNote2);
-        Claim claim1 = new Claim(null, "O","1234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", LocalDate.now(),"further details here", null, tasks, notes);
-        Claim claim2 = new Claim(null,"O","4567", "Pet", "", "", "", "", "Dog", "Labrador", "John", "Wick", Date.valueOf("2023-01-01"), 34.98,"Genetic conditions or congenital defects.","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim3 = new Claim(null,"P","8901", "Motor", "", "Ford", "Galaxy", "2016", "", "", "David", "Wilson", Date.valueOf("2023-01-01"), 567.45,"Collision with another vehicle or object","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim4 = new Claim(null,"A","2345", "Property", "567 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Katie", "Smith", Date.valueOf("2023-01-01"), 456.00,"Burglary or theft","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim5 = new Claim(null,"R","3456", "Pet", "", "", "", "", "Cat", "Siamese", "Emily", "Johnson", Date.valueOf("2023-01-01"), 233.89,"Emergency care, such as treatment for a severe injury or illness.","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim6 = new Claim(null,"C","5678", "Motor", "", "Volkswagon", "Golf", "2020", "", "", "Jacob", "Williams", Date.valueOf("2023-01-01"), 122.12,"Mechanical breakdown or failure","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim7 = new Claim(null,"H","6789", "Motor", "", "Audi", "A4", "2021", "", "", "Michael", "Jones", Date.valueOf("2023-01-01"), 1123.45,"Vandalism or malicious damage","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
-        Claim claim8 = new Claim(null,"A","7890", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", LocalDate.now(),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim1 = new Claim(null, "O","1234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", Date.valueOf("2023-01-01"),"further details here", 0.00, tasks, notes);
+        Claim claim2 = new Claim(null,"O","4567", "Pet", "", "", "", "", "Dog", "Labrador", "John", "Wick", Date.valueOf("2023-01-01"), 34.98,"Genetic conditions or congenital defects.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim3 = new Claim(null,"P","8901", "Motor", "", "Ford", "Galaxy", "2016", "", "", "David", "Wilson", Date.valueOf("2023-01-01"), 567.45,"Collision with another vehicle or object","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim4 = new Claim(null,"A","2345", "Property", "567 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Katie", "Smith", Date.valueOf("2023-01-01"), 456.00,"Burglary or theft","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim5 = new Claim(null,"R","3456", "Pet", "", "", "", "", "Cat", "Siamese", "Emily", "Johnson", Date.valueOf("2023-01-01"), 233.89,"Emergency care, such as treatment for a severe injury or illness.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim6 = new Claim(null,"C","5678", "Motor", "", "Volkswagon", "Golf", "2020", "", "", "Jacob", "Williams", Date.valueOf("2023-01-01"), 122.12,"Mechanical breakdown or failure","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim7 = new Claim(null,"H","6789", "Motor", "", "Audi", "A4", "2021", "", "", "Michael", "Jones", Date.valueOf("2023-01-01"), 1123.45,"Vandalism or malicious damage","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Claim claim8 = new Claim(null,"A","7890", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", Date.valueOf("2023-01-01"),"further details here",null, new ArrayList<Task>(), new ArrayList<Note>());
         newTask1.setClaim(claim1);
         newTask2.setClaim(claim1);
         newNote1.setClaim(claim1);

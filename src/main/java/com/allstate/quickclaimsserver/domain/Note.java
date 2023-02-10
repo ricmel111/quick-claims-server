@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -16,9 +17,9 @@ public class Note {
     @ManyToOne
     private Claim claim;
     private String noteText;
-    private Date noteDate;
+    private LocalDateTime noteDate;
 
-    public Note(String noteText, Date noteDate) {
+    public Note(String noteText, LocalDateTime noteDate) {
         this.noteText = noteText;
         this.noteDate = noteDate;
     }
@@ -51,11 +52,11 @@ public class Note {
         this.noteText = noteText;
     }
 
-    public Date getNoteDate() {
+    public LocalDateTime getNoteDate() {
         return noteDate;
     }
 
-    public void setNoteDate(Date noteDate) {
+    public void setNoteDate(LocalDateTime noteDate) {
         this.noteDate = noteDate;
     }
 

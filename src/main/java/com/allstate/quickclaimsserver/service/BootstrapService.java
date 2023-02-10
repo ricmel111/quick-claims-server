@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,30 +28,36 @@ public class BootstrapService {
     @PostConstruct //run this method on start up
     public void setUpInitialData() {
 
-        int numberOfTasks = taskRepository.findAll().size();
-        if(numberOfTasks == 0) {
-            Task newTask = new Task("O", "this is some text for a task", Date.valueOf("2023-01-01"));
-            Task savedTask = taskRepository.save(newTask);
-            System.out.println("Task saved with id " + savedTask.getId());
+        List<Task> allTasks = taskRepository.findAll();
+        if (allTasks != null && !allTasks.isEmpty()) {
+            int numberOfTasks = allTasks.size();
+            if (numberOfTasks == 0) {
+                Task newTask = new Task("O", "this is some text for a task", Date.valueOf("2023-01-01"));
+                Task savedTask = taskRepository.save(newTask);
+                System.out.println("Task saved with id " + savedTask.getId());
+            }
         }
-        int numberOfNotes = noteRepository.findAll().size();
-        if(numberOfNotes == 0) {
-            Note newNote = new Note("this is some text for a note", Date.valueOf("2023-01-01"));
-            Note savedNote = noteRepository.save(newNote);
-            System.out.println("Note saved with id " + savedNote.getId());
+        List<Task> allNotes = taskRepository.findAll();
+        if (allNotes != null && !allNotes.isEmpty()) {
+            int numberOfNotes = allNotes.size();
+            if (numberOfNotes == 0) {
+                Note newNote = new Note("this is some text for a note", LocalDateTime.of(2023, 1, 1, 0, 0));
+                Note savedNote = noteRepository.save(newNote);
+                System.out.println("Note saved with id " + savedNote.getId());
+            }
         }
         if(claimRepository.count() == 0) {
             Task newTask1 = new Task("O", "this is task 1", Date.valueOf("2023-01-01"));
             Task newTask2 = new Task("O", "this is task 2", Date.valueOf("2023-01-01"));
-            Note newNote1 = new Note("this is note 1", Date.valueOf("2023-01-01"));
-            Note newNote2 = new Note("this is note 2", Date.valueOf("2023-01-01"));
+            Note newNote1 = new Note("this is note 1", LocalDateTime.of(2023, 1, 1, 0, 0));
+            Note newNote2 = new Note("this is note 2", LocalDateTime.of(2023, 1, 1, 0, 0));
             List<Task> tasks = new ArrayList<>();
             List<Note> notes = new ArrayList<>();
             tasks.add(newTask1);
             tasks.add(newTask2);
             notes.add(newNote1);
             notes.add(newNote2);
-            Claim claim1 = new Claim(null, "O","0111211234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", LocalDate.now(),"further details here", null, tasks, notes);
+            Claim claim1 = new Claim(null, "O","0111211234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", Date.valueOf("2023-01-01"),"further details here", null, tasks, notes);
             newTask1.setClaim(claim1);
             newTask2.setClaim(claim1);
             newNote1.setClaim(claim1);

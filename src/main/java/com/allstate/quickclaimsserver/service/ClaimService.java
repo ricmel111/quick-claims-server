@@ -3,7 +3,9 @@ package com.allstate.quickclaimsserver.service;
 import com.allstate.quickclaimsserver.domain.Claim;
 import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
+import com.allstate.quickclaimsserver.exceptions.ArchivedException;
 import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
+import com.allstate.quickclaimsserver.exceptions.InvalidFieldException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
 
 import java.util.List;
@@ -29,6 +31,6 @@ public interface ClaimService {
 
     public Note saveNote(Note note) throws ClaimNotFoundException;
 
-    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException;
+    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException;
 
 }

@@ -27,9 +27,8 @@ public class Claim {
     private Double estimatedAmount;
     private String claimReason;
     private String incidentDescription;
-    private LocalDate incidentDate;
+    private Date incidentDate;
     private String furtherDetails;
-
     private Double paymentAmount;
 
     public Double getPaymentAmount() {
@@ -189,11 +188,11 @@ public class Claim {
         this.incidentDescription = incidentDescription;
     }
 
-    public LocalDate getIncidentDate() {
+    public Date getIncidentDate() {
         return incidentDate;
     }
 
-    public void setIncidentDate(LocalDate incidentDate) {
+    public void setIncidentDate(Date incidentDate) {
         this.incidentDate = incidentDate;
     }
 
@@ -205,7 +204,7 @@ public class Claim {
         this.furtherDetails = furtherDetails;
     }
 
-    public Claim(Integer id, String claimStatus, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, LocalDate incidentDate, String furtherDetails, Double paymentAmount, List<Task> tasks, List<Note> notes) {
+    public Claim(Integer id, String claimStatus, String policyNumber, String policyType, String propertyAddress, String vehicleMake, String vehicleModel, String manufactureYear, String typeOfAnimal, String breedOfAnimal, String firstName, String lastName, Date claimStartDate, Double estimatedAmount, String claimReason, String incidentDescription, Date incidentDate, String furtherDetails, Double paymentAmount, List<Task> tasks, List<Note> notes) {
         this.id = id;
         this.claimStatus = claimStatus;
         this.policyNumber = policyNumber;
