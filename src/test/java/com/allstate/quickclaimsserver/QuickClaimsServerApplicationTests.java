@@ -12,9 +12,4 @@ class QuickClaimsServerApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test
-	public void testAValid9DigitPolicyNumber() {
-		Claim claim = new Claim();
-	}
-
 }

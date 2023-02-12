@@ -25,12 +25,12 @@ public interface ClaimService {
 
     public List<Claim> getByClaimStatus(List<String> claimStatus);
 
-    public Claim saveClaim(Claim claim) throws MissingFieldException;
+    public Claim saveClaim(Claim claim) throws MissingFieldException, InvalidFieldException;
 
     public Task saveTask(Task task) throws ClaimNotFoundException;
 
     public Note saveNote(Note note) throws ClaimNotFoundException;
 
-    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException;
+    public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException, MissingFieldException;
 
 }

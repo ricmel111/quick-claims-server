@@ -4,7 +4,6 @@ import com.allstate.quickclaimsserver.domain.Claim;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

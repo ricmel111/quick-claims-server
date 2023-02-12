@@ -63,7 +63,7 @@ public class ClaimController {
     }
 
     @PostMapping
-    public Claim saveNewClaim(@RequestBody Claim claim) throws MissingFieldException {
+    public Claim saveNewClaim(@RequestBody Claim claim) throws MissingFieldException, InvalidFieldException {
         System.out.println(claim);
         return claimService.saveClaim(claim);
     }
@@ -87,12 +87,12 @@ public class ClaimController {
     }
 
     @PutMapping("/{id}")
-    public Claim updateClaim(@PathVariable Integer id, @RequestBody HashMap<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException {
+    public Claim updateClaim(@PathVariable Integer id, @RequestBody HashMap<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException, MissingFieldException {
         return claimService.updateClaim(id, fields);
     }
 
     @GetMapping("/init")
-    public String setUpData() throws MissingFieldException {
+    public String setUpData() throws MissingFieldException, InvalidFieldException {
         Task newTask1 = new Task("O", "this is task 1", Date.valueOf("2023-01-01"));
         Task newTask2 = new Task("O", "this is task 2", Date.valueOf("2023-01-01"));
         Note newNote1 = new Note("this is note 1", LocalDateTime.of(2023, 1, 1, 0, 0));

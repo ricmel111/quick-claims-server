@@ -1,6 +1,7 @@
 package com.allstate.quickclaimsserver.control;
 
 import com.allstate.quickclaimsserver.domain.Task;
+import com.allstate.quickclaimsserver.exceptions.ClaimNotFoundException;
 import com.allstate.quickclaimsserver.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping()
-    public List<Task> getAllTasks(@RequestParam(value="claimId", required = false) Integer claimId) {
+    public List<Task> getAllTasks(@RequestParam(value="claimId", required = false) Integer claimId) throws ClaimNotFoundException {
         if (claimId != null) {
             return taskService.getByClaimId(claimId);
         }

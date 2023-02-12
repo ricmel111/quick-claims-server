@@ -5,8 +5,9 @@ import com.allstate.quickclaimsserver.data.NoteRepository;
 import com.allstate.quickclaimsserver.data.TaskRepository;
 import com.allstate.quickclaimsserver.data.UserRepository;
 import com.allstate.quickclaimsserver.domain.Claim;
+import com.allstate.quickclaimsserver.exceptions.ArchivedException;
+import com.allstate.quickclaimsserver.exceptions.InvalidFieldException;
 import com.allstate.quickclaimsserver.exceptions.MissingFieldException;
-import com.allstate.quickclaimsserver.service.BootstrapService;
 import com.allstate.quickclaimsserver.service.ClaimService;
 import com.allstate.quickclaimsserver.domain.Note;
 import com.allstate.quickclaimsserver.domain.Task;
@@ -22,9 +23,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,6 +51,38 @@ public class ClaimServiceTests {
     private NoteRepository noteRepository;
 
     @Test
+    public void testSaveClaimSuccess() throws MissingFieldException, InvalidFieldException {
+        Claim claim = new Claim(null,"A","123456789", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Mockito.when(claimRepository.save(claim)).thenReturn(claim);
+        Claim savedClaim = claimService.saveClaim(claim);
+        assertEquals(claim, savedClaim);
+    }
+
+    @Test
+    public void testValid9DigitPolicyNumber() throws MissingFieldException, InvalidFieldException {
+        Claim claim = new Claim(null,"A","123456789", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Mockito.when(claimRepository.save(claim)).thenReturn(claim);
+        Claim savedClaim = claimService.saveClaim(claim);
+        assertEquals(claim.getPolicyNumber(), savedClaim.getPolicyNumber());
+    }
+
+    @Test
+    public void test9DigitPolicyNumbersAreNotAllowed() {
+        assertThrows(InvalidFieldException.class, () -> {
+            Claim claim = new Claim(null, "A", "12345678", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43, "Behavioral issues, such as aggression or separation anxiety.", "a long description", Date.valueOf("2023-01-01"), "further details here", 0.00, new ArrayList<Task>(), new ArrayList<Note>());
+            claimService.saveClaim(claim);
+        });
+    }
+
+    @Test
+    public void testEmptyRequiredFieldsAreNotAllowed() {
+        assertThrows(MissingFieldException.class, () -> {
+            Claim claim = new Claim(null, "", "123456789", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43, "Behavioral issues, such as aggression or separation anxiety.", "a long description", Date.valueOf("2023-01-01"), "further details here", 0.00, new ArrayList<Task>(), new ArrayList<Note>());
+            claimService.saveClaim(claim);
+        });
+    }
+
+    @Test
     public void testGetAllClaims() {
         List<Claim> claims = new ArrayList<>();
         claims.add(new Claim(null,"A","7890", "Pet", "", "", "", "", "Rabbit", "Mini Lop", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>()));
@@ -58,50 +92,19 @@ public class ClaimServiceTests {
     }
 
     @Test
-    public void testSaveClaim() throws MissingFieldException {
-        Claim claim = new Claim();
-        claim.setPolicyNumber("123456");
-        claim.setPolicyType("Property");
-        claim.setPropertyAddress("123 Main St");
-        claim.setFirstName("John");
-        claim.setLastName("Doe");
-        claim.setEstimatedAmount(1000.0);
-        claim.setClaimReason("Accident");
-        claim.setIncidentDescription("Some description");
-
-        Claim savedClaim = new Claim();
-        savedClaim.setId(1);
-        savedClaim.setPolicyNumber("123456");
-        savedClaim.setPolicyType("Property");
-        savedClaim.setPropertyAddress("123 Main St");
-        savedClaim.setFirstName("John");
-        savedClaim.setLastName("Doe");
-        savedClaim.setEstimatedAmount(1000.0);
-        savedClaim.setClaimReason("Accident");
-        savedClaim.setIncidentDescription("Some description");
-
-        Mockito.when(claimRepository.save(claim)).thenReturn(savedClaim);
-
-        Claim result = claimService.saveClaim(claim);
-
-        assertNotNull(result);
-        assertEquals("123456", result.getPolicyNumber());
+    public void testValidPropertyAddressWhenPolicyTypeIsProperty() throws MissingFieldException, InvalidFieldException {
+        Claim claim = new Claim(null,"A","123456789", "Property", "123 Main Street, Chicago", "", "", "", "", "", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43,"Behavioral issues, such as aggression or separation anxiety.","a long description", Date.valueOf("2023-01-01"),"further details here",0.00, new ArrayList<Task>(), new ArrayList<Note>());
+        Mockito.when(claimRepository.save(claim)).thenReturn(claim);
+        Claim savedClaim = claimService.saveClaim(claim);
+        assertEquals(claim, savedClaim);
     }
 
     @Test
-    public void testSavePolicyNumberWithLessThan9Digits() throws MissingFieldException {
-        Claim claim = new Claim();
-        claim.setPolicyNumber("123456");
-
-        Claim savedClaim = new Claim();
-        savedClaim.setId(1);
-        savedClaim.setPolicyNumber("123456");
-
-        Mockito.when(claimRepository.save(claim)).thenReturn(savedClaim);
-
-        Claim result = claimService.saveClaim(claim);
-
-        assertNotNull(result);
-        assertEquals("123456", result.getPolicyNumber());
+    public void testMissingPropertyAddressWhenPolicyTypeIsProperty() throws MissingFieldException, InvalidFieldException {
+        assertThrows(MissingFieldException.class, () -> {
+            Claim claim = new Claim(null, "", "123456789", "Property", "", "", "", "", "", "", "Emily", "Brown", Date.valueOf("2023-01-01"), 167.43, "Behavioral issues, such as aggression or separation anxiety.", "a long description", Date.valueOf("2023-01-01"), "further details here", 0.00, new ArrayList<Task>(), new ArrayList<Note>());
+            claimService.saveClaim(claim);
+        });
     }
+
 }
