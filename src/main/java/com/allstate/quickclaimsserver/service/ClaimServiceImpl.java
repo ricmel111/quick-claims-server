@@ -130,6 +130,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public Claim updateClaim(Integer id, Map<String, Object> fields) throws ClaimNotFoundException, ArchivedException, InvalidFieldException, MissingFieldException {
+        System.out.println("TEST "+id+fields);
         Optional<Claim> optionalClaim = claimRepository.findById(id);
         if (!optionalClaim.isPresent()) {
             throw new ClaimNotFoundException("There is no claim with id " + id);
