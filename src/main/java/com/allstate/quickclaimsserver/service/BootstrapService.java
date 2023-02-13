@@ -57,7 +57,7 @@ public class BootstrapService {
             tasks.add(newTask2);
             notes.add(newNote1);
             notes.add(newNote2);
-            Claim claim1 = new Claim(null, "O","0111211234", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", Date.valueOf("2023-01-01"),"further details here", null, tasks, notes);
+            Claim claim1 = new Claim(null, "O","123456781", "Property", "123 Main Street, Chicago, IL, 20982", "", "", "", "", "", "Phil", "Foden", Date.valueOf("2023-01-01"), 123.45,"Fire damage","a long description", Date.valueOf("2023-01-01"),"further details here", null, tasks, notes);
             newTask1.setClaim(claim1);
             newTask2.setClaim(claim1);
             newNote1.setClaim(claim1);

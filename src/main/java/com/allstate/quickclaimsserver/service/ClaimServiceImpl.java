@@ -156,16 +156,22 @@ public class ClaimServiceImpl implements ClaimService {
         if (fields.containsKey("claimStatus")) {
             if (!Arrays.asList("O", "H", "A", "R", "C", "P").contains(fields.get("claimStatus").toString())) {
                 throw new InvalidFieldException("Invalid claim status, allowed values are O, H, A, R, C, and P");
-            } else if (claim.getClaimStatus().equals("O") && fields.get("claimStatus").toString().equals("C")) {
+            }
+            else if (claim.getClaimStatus().equals("O") && fields.get("claimStatus").toString().equals("C")) {
                 throw new InvalidFieldException("Cannot change claim status from O to C");
-            } else if (fields.get("claimStatus").toString().equals("A") || fields.get("claimStatus").toString().equals("C")) {
+            }
+            else if (fields.get("claimStatus").toString().equals("A") || fields.get("claimStatus").toString().equals("C")) {
                 List<Task> tasks = taskService.getByClaimId(id);
                 for (Task task : tasks) {
                     if (task.getTaskStatus().equals("O")) {
                         throw new InvalidFieldException("Cannot change claim status to A or C, as there are open tasks associated with this claim");
+                    } else {
+                        claim.setClaimStatus(fields.get("claimStatus").toString());
+                        System.out.println("claimStatus updated");
                     }
                 }
-            } else if (!fields.get("claimStatus").toString().equals(claim.getClaimStatus())) {
+            }
+            else if (!fields.get("claimStatus").toString().equals(claim.getClaimStatus())) {
                 claim.setClaimStatus(fields.get("claimStatus").toString());
                 System.out.println("claimStatus updated");
             }
